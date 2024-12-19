@@ -1,6 +1,6 @@
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { HotelCard } from "../components/HotelCard";
-import { useEffect, useState } from "react";
 import { fetchHotels } from "../services/hotelService";
 
 const Loading = styled.p`

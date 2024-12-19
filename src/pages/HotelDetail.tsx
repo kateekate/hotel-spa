@@ -1,7 +1,7 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import StarIcon from "../components/StarIcon";
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { fetchHotels } from "../services/hotelService";
 
 const spin = keyframes`
