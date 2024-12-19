@@ -1,9 +1,15 @@
-function App() {
-  return (
-    <div>
-      <h1>App</h1>
-    </div>
-  )
-}
+import { Navigate, Route, Routes } from "react-router-dom";
+import { HotelsList } from "./pages/HotelsList";
+import { HotelDetail } from "./pages/HotelDetail";
 
-export default App
+const App: React.FC = () => {
+  return (
+    <Routes>
+      <Route path="/hotels" element={<HotelsList />} />
+      <Route path="/hotels/:id" element={<HotelDetail />} />
+      <Route path="*" element={<Navigate to="/hotels" />} />
+    </Routes>
+  );
+};
+
+export default App;
