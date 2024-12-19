@@ -1,5 +1,13 @@
 import styled from "styled-components";
 import StarIcon from "../components/StarIcon";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { fetchHotels } from "../services/hotelService";
+
+const ErrorMessage = styled.p`
+  font-size: 18px;
+  color: #8f0c0c;
+`;
 
 const MainContainer = styled.div`
   display: flex;
@@ -70,28 +78,77 @@ const RoomList = styled.ul`
   color: #969696;
 `;
 
+interface Hotel {
+  id: number;
+  name: string;
+  location: string;
+  rating: number;
+  imageUrl: string;
+  datesOfTravel: string[];
+  boardBasis: string;
+  rooms: { roomType: string; amount: number }[];
+}
+
 export const HotelDetail: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const [hotel, setHotel] = useState<Hotel | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadHotel = async () => {
+      try {
+        const data = await fetchHotels();
+        const foundHotel = data.find((h: Hotel) => h.id === Number(id));
+        if (!foundHotel) {
+          throw new Error("Hotel not found");
+        }
+        setHotel(foundHotel);
+      } catch (error) {
+        console.error("Error loading hotel:", error);
+        setError("Failed to load hotel. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadHotel();
+  }, [id]);
+
+  if (loading) {
+    return <ErrorMessage>Loading...</ErrorMessage>;
+  }
+
+  if (error) {
+    return <ErrorMessage>{error}</ErrorMessage>;
+  }
+
+  if (!hotel) {
+    return <ErrorMessage>No hotel data found.</ErrorMessage>;
+  }
+
   return (
     <MainContainer>
       <Container>
-        <Image
-          src="https://example.com/images/rainforest-retreat.jpg"
-          alt="Hotel Image"
-        />
-        <Title>Hotel Name</Title>
+        <Image src={hotel.imageUrl} alt={hotel.name} />
+        <Title>{hotel.name}</Title>
         <InfoHeader>
-          <Location>Location: Maldives</Location>
+          <Location>Location: {hotel.location}</Location>
           <Rating>
             <StarIcon />
-            <span>4.5</span>
+            <span>{hotel.rating}</span>
           </Rating>
         </InfoHeader>
-        <Info>Dates of Travel: 2024-01-01 to 2024-01-07</Info>
-        <Info>Board Basis: All Inclusive</Info>
+        <Info>
+          Dates of Travel: {hotel.datesOfTravel[0]} to {hotel.datesOfTravel[1]}
+        </Info>
+        <Info>Board Basis: {hotel.boardBasis}</Info>
         <Info>Rooms:</Info>
         <RoomList>
-          <li>Deluxe Suite (5)</li>
-          <li>Standard Room (3)</li>
+          {hotel.rooms.map((room, index) => (
+            <li key={index}>
+              {room.roomType} ({room.amount})
+            </li>
+          ))}
         </RoomList>
       </Container>
     </MainContainer>

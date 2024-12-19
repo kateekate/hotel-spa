@@ -63,19 +63,19 @@ const Button = styled(Link)`
   }
 `;
 
-export const HotelCard: React.FC<{ id: number; rating: number }> = ({
-  id,
-  rating,
-}) => {
+export const HotelCard: React.FC<{
+  id: number;
+  name: string;
+  location: string;
+  rating: number;
+  imageUrl: string;
+}> = ({ id, name, location, rating, imageUrl }) => {
   return (
     <Card>
-      <Image
-        src="https://example.com/images/seaside-paradise.jpg"
-        alt="Hotel Image"
-      />
+      <Image src={imageUrl} alt={name} />
       <Info>
-        <Title>Hotel Name</Title>
-        <Location>Location: Location</Location>
+        <Title>{name}</Title>
+        <Location>Location: {location}</Location>
         <Rating>
           <StarIcon />
           {rating}
