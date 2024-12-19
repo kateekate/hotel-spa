@@ -1,8 +1,27 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import StarIcon from "../components/StarIcon";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { fetchHotels } from "../services/hotelService";
+
+const spin = keyframes`
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+`;
+
+const LoadingSpinner = styled.div`
+  border: 4px solid #c5c0b6;
+  border-top: 4px solid #edca85;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: ${spin} 1s linear infinite;
+  margin: 20px auto;
+`;
 
 const ErrorMessage = styled.p`
   font-size: 18px;
@@ -98,7 +117,9 @@ export const HotelDetail: React.FC = () => {
   useEffect(() => {
     const loadHotel = async () => {
       try {
+        setLoading(true);
         const data = await fetchHotels();
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         const foundHotel = data.find((h: Hotel) => h.id === Number(id));
         if (!foundHotel) {
           throw new Error("Hotel not found");
@@ -115,7 +136,11 @@ export const HotelDetail: React.FC = () => {
   }, [id]);
 
   if (loading) {
-    return <ErrorMessage>Loading...</ErrorMessage>;
+    return (
+      <MainContainer>
+        <LoadingSpinner />
+      </MainContainer>
+    );
   }
 
   if (error) {
